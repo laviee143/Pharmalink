@@ -1,0 +1,178 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      UserRole @default(PHARMACIST)
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  prescriptions Prescription[]
+  invoices       Invoice[]
+  
+  @@map("users")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String?  @unique
+  phone     String
+  address   String?
+  dateOfBirth DateTime?
+  allergies String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  prescriptions Prescription[]
+  invoices       Invoice[]
+
+  @@map("customers")
+}
+
+model Medicine {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  category    String
+  brand       String?
+  genericName String?
+  strength    String?
+  form        String   // tablet, capsule, liquid, etc.
+  unitPrice   Float
+  stock       Int      @default(0)
+  minStock    Int      @default(10)
+  expiryDate  DateTime?
+  manufacturer String?
+  barcode     String?  @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  prescriptionItems PrescriptionItem[]
+  invoiceItems       InvoiceItem[]
+
+  @@map("medicines")
+}
+
+model Prescription {
+  id           String              @id @default(cuid())
+  prescriptionNumber String         @unique
+  customerId   String
+  pharmacistId String
+  doctorName   String?
+  diagnosis    String?
+  notes        String?
+  status       PrescriptionStatus  @default(PENDING)
+  totalAmount  Float               @default(0)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  // Relations
+  customer   Customer           @relation(fields: [customerId], references: [id])
+  pharmacist User               @relation(fields: [pharmacistId], references: [id])
+  items      PrescriptionItem[]
+
+  @@map("prescriptions")
+}
+
+model PrescriptionItem {
+  id             String @id @default(cuid())
+  prescriptionId String
+  medicineId     String
+  quantity       Int
+  dosage         String?
+  instructions   String?
+  price          Float
+
+  // Relations
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  medicine     Medicine     @relation(fields: [medicineId], references: [id])
+
+  @@map("prescription_items")
+}
+
+model Invoice {
+  id            String      @id @default(cuid())
+  invoiceNumber String      @unique
+  customerId    String
+  pharmacistId  String
+  prescriptionId String?
+  subtotal      Float
+  tax           Float       @default(0)
+  totalAmount   Float
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus @default(PENDING)
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  customer    Customer      @relation(fields: [customerId], references: [id])
+  pharmacist  User          @relation(fields: [pharmacistId], references: [id])
+  prescription Prescription? @relation(fields: [prescriptionId], references: [id])
+  items       InvoiceItem[]
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id        String @id @default(cuid())
+  invoiceId String
+  medicineId String
+  quantity  Int
+  unitPrice Float
+  total     Float
+
+  // Relations
+  invoice  Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+
+  @@map("invoice_items")
+}
+
+enum UserRole {
+  ADMIN
+  PHARMACIST
+  CASHIER
+}
+
+enum PrescriptionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  INSURANCE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIALLY_PAID
+  REFUNDED
+}
