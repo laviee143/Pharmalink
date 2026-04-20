@@ -211,87 +211,355 @@ docker-compose up -d
 ```
 
 4. **Manual setup**
-```bash
-# Backend setup
-cd backend
 npm install
-npx prisma migrate dev
-npx prisma generate
+```
+
+3. **Environment setup**
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+4. **Database setup**
+```bash
+# Create database
+createdb pharmalink
+
+# Run migrations
+npm run migrate
+
+# Generate Prisma client
+npm run generate
+
+# Seed database (optional)
+npm run seed
+```
+
+5. **Start development server**
+```bash
 npm run dev
 ```
 
-5. **Seed database**
+The API will be available at `http://localhost:5000`
+
+## Development Setup
+
+### Environment Variables
+Copy `.env.example` to `.env` and configure:
+
 ```bash
-cd backend
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/pharmalink
+
+# JWT
+JWT_SECRET=your-super-secret-key
+JWT_REFRESH_SECRET=your-refresh-secret
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# Email
+EMAIL_HOST=smtp.gmail.com
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+```
+
+### Database Setup
+```bash
+# Create database
+createdb pharmalink
+
+# Run migrations
+npm run migrate
+
+# Generate client
+npm run generate
+
+# Seed data
 npm run seed
+```
+
+### Available Scripts
+```bash
+# Development
+npm run dev          # Start development server
+npm run build        # Build for production
+npm start            # Start production server
+
+# Database
+npm run migrate      # Run migrations
+npm run migrate:dev  # Run development migrations
+npm run generate     # Generate Prisma client
+npm run seed         # Seed database
+npm run studio       # Open Prisma Studio
+
+# Testing
+npm test             # Run tests
+npm run test:watch   # Run tests in watch mode
+npm run test:coverage # Run tests with coverage
+
+# Code Quality
+npm run lint         # Run ESLint
+npm run lint:fix     # Fix linting issues
+npm run format       # Format code with Prettier
+
+# Docker
+npm run docker:build # Build Docker image
+npm run docker:run   # Run Docker container
 ```
 
 ## API Documentation
 
-- **Swagger UI**: `http://localhost:5000/api-docs`
-- **Postman Collection**: Available in `docs/api/`
-- **API Reference**: `docs/api/swagger.yaml`
+### Swagger/OpenAPI
+- **Development**: `http://localhost:5000/api-docs`
+- **Production**: `https://api.pharmalink.com/api-docs`
 
-## Development Workflow
+### Authentication
+All API endpoints (except auth) require JWT authentication:
 
-1. Create feature branch from `develop`
-2. Implement changes following coding standards
-3. Add tests for new functionality
-4. Ensure all tests pass
-5. Submit pull request to `develop`
-6. Code review and merge
-7. Release to `main`
+```bash
+# Get access token
+POST /api/auth/login
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+# Use token in headers
+Authorization: Bearer <access_token>
+```
+
+### Rate Limiting
+- **General**: 100 requests per 15 minutes
+- **Auth**: 5 requests per minute
+- **Upload**: 10 requests per hour
+
+### Error Handling
+Standardized error responses:
+
+```json
+{
+  "success": false,
+  "message": "Error description",
+  "errors": [
+    {
+      "field": "email",
+      "message": "Invalid email format"
+    }
+  ]
+}
+```
+
+## Project Structure
+
+```
+Pharmalink/
+backend/
+src/
+  modules/                    # Feature-based modules
+    auth/
+      controllers/           # Request handlers
+      services/              # Business logic
+      routes/                # API routes
+      models/                # Data models
+      middleware/            # Module-specific middleware
+      utils/                 # Module utilities
+      validators/            # Input validation
+    users/                   # User management
+    medicines/               # Medicine catalog
+    inventory/               # Stock management
+    orders/                  # Order processing
+    payments/                # Payment processing
+    messages/                # Messaging system
+    notifications/           # Notifications
+    reports/                 # Analytics & reporting
+  config/                    # Configuration files
+    database.js              # Database connection
+    redis.js                 # Redis connection
+    email.js                 # Email service
+    swagger.js               # API documentation
+  middlewares/               # Global middleware
+    auth.js                  # Authentication
+    validation.js            # Input validation
+    rateLimit.js             # Rate limiting
+    errorHandler.js          # Error handling
+    logger.js                # Logging
+  utils/                     # Shared utilities
+    helpers.js               # Helper functions
+    constants.js             # Application constants
+    errors.js                # Custom errors
+    response.js              # Response formatting
+    validators.js            # Validation schemas
+  app.js                     # Express application
+  server.js                  # Server entry point
+tests/                       # Test files
+  unit/                      # Unit tests
+  integration/               # Integration tests
+  e2e/                       # End-to-end tests
+docs/                        # Documentation
+  api/                       # API docs
+  architecture/              # Architecture docs
+  deployment/                # Deployment guides
+  development/               # Development guides
+```
+
+## Database Schema
+
+### Core Entities
+- **Users**: Authentication and role management
+- **Medicines**: Product catalog and specifications
+- **Inventory**: Stock levels and batch tracking
+- **Orders**: Purchase orders and fulfillment
+- **Payments**: Financial transactions
+- **Messages**: Communication system
+- **Notifications**: Alert system
+
+### Relationships
+- Users can be Pharmacies or Wholesalers
+- Orders belong to Customers (Pharmacies) and Suppliers (Wholesalers)
+- Inventory items belong to Users and reference Medicines
+- Messages connect Users with optional Order context
+- Notifications target Users with various types and channels
+
+### Schema Documentation
+See `docs/architecture/database-schema.md` for detailed schema design.
 
 ## Testing
 
+### Test Structure
+```
+tests/
+  unit/                      # Unit tests
+    services/                # Service layer tests
+    utils/                   # Utility function tests
+    middleware/              # Middleware tests
+  integration/               # Integration tests
+    routes/                  # API endpoint tests
+    database/                # Database tests
+  e2e/                      # End-to-end tests
+    auth/                    # Authentication flows
+    orders/                  # Order workflows
+    payments/                # Payment processes
+```
+
+### Running Tests
 ```bash
-# Run all tests
+# All tests
 npm test
 
-# Run specific test suites
+# Unit tests only
 npm run test:unit
+
+# Integration tests only
 npm run test:integration
+
+# E2E tests only
 npm run test:e2e
 
-# Test coverage
+# With coverage
 npm run test:coverage
+
+# Watch mode
+npm run test:watch
 ```
+
+### Test Coverage
+- Target: 90%+ coverage
+- Reports: HTML and LCOV formats
+- CI Integration: Automated coverage reporting
 
 ## Deployment
 
-### Development
+### Docker Deployment
 ```bash
+# Build image
+docker build -t pharmalink-backend .
+
+# Run container
+docker run -p 5000:5000 pharmalink-backend
+```
+
+### Docker Compose
+```bash
+# Start all services
 docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
 ```
 
-### Production
-```bash
-docker-compose -f config/docker-compose.prod.yml up -d
-```
+### Environment Configuration
+- **Development**: Local development with hot reload
+- **Staging**: Pre-production testing environment
+- **Production**: Optimized for performance and security
 
-## Monitoring & Logging
-
-- **Application Logs**: Structured logging with Winston
-- **Database Monitoring**: Prisma query insights
-- **Performance Monitoring**: APM integration
-- **Health Checks**: `/health` endpoint
+### CI/CD Pipeline
+- **Continuous Integration**: Automated testing and quality checks
+- **Continuous Deployment**: Automated deployment to staging/production
+- **Security Scanning**: Vulnerability assessment and dependency checks
+- **Performance Testing**: Load testing and optimization
 
 ## Security
 
-- **Authentication**: JWT with refresh tokens
-- **Authorization**: Role-based access control
-- **Input Validation**: Comprehensive request validation
-- **Rate Limiting**: API rate limiting
-- **Security Headers**: CORS, CSP, HSTS
-- **Encryption**: Data encryption at rest and in transit
+### Authentication & Authorization
+- JWT tokens with refresh mechanism
+- Role-based access control (RBAC)
+- Session management with Redis
+- Password hashing with bcrypt
+
+### Data Protection
+- Input validation and sanitization
+- SQL injection prevention with Prisma
+- XSS protection with Helmet
+- CSRF protection for state-changing operations
+
+### Rate Limiting
+- Intelligent rate limiting by endpoint
+- DDoS protection
+- API abuse prevention
+- User-based throttling
+
+### Compliance
+- GDPR compliance features
+- Data encryption at rest and in transit
+- Audit logging for compliance
+- Privacy controls and data retention
 
 ## Contributing
 
+### Development Workflow
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Make changes with proper testing
+4. Commit changes: `git commit -m 'feat: Add amazing feature'`
+5. Push to branch: `git push origin feature/amazing-feature`
+6. Open Pull Request
+
+### Code Standards
+- Follow ESLint configuration
+- Use Prettier for formatting
+- Write comprehensive tests
+- Document public APIs
+- Follow semantic versioning
+
+### Commit Messages
+Follow conventional commits:
+- `feat:` New features
+- `fix:` Bug fixes
+- `docs:` Documentation
+- `style:` Code formatting
+- `refactor:` Code refactoring
+- `test:` Testing
+- `chore:` Maintenance
+
+### Pull Request Process
+- Automated checks must pass
+- Code review required
+- Documentation updates
+- Test coverage maintained
 
 ## License
 
@@ -299,11 +567,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
+- **Issues**: [GitHub Issues](https://github.com/laviee143/Pharmalink/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/laviee143/Pharmalink/discussions)
+- **Email**: support@pharmalink.com
+- **Documentation**: [Full Documentation](https://docs.pharmalink.com)
+
+---
+
+**PharmaLink** - Connecting Pharmacies with Wholesalers, Efficiently.
+
+## Support
+
 For support and questions:
 - Create an issue in the repository
 - Email: support@pharmalink.com
 - Documentation: [docs/](./docs/)
-
-## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
