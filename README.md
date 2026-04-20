@@ -558,29 +558,40 @@ Follow conventional commits:
 ### Pull Request Process
 - Automated checks must pass
 - Code review required
-- Documentation updates
-- Test coverage maintained
 
-## License
+---
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Support & Community
 
-## Support
-
+### Getting Help
 - **Issues**: [GitHub Issues](https://github.com/laviee143/Pharmalink/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/laviee143/Pharmalink/discussions)
 - **Email**: support@pharmalink.com
 - **Documentation**: [Full Documentation](https://docs.pharmalink.com)
 
+### Community
+- **Contributors**: Welcome contributions from the community
+- **Feedback**: We value your feedback and suggestions
+- **Roadmap**: Check our project roadmap for upcoming features
+- **Blog**: Follow our development blog for updates
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Acknowledgments
+
+- **PharmaLink Team**: Dedicated developers and contributors
+- **Open Source Community**: Inspiration and tools that made this possible
+- **Healthcare Professionals**: Feedback and requirements that shaped this platform
+- **Early Adopters**: Valuable feedback and testing
+
 ---
 
 **PharmaLink** - Connecting Pharmacies with Wholesalers, Efficiently.
 
-## Support
-
-For support and questions:
-- Create an issue in the repository
-- Email: support@pharmalink.com
-- Documentation: [docs/](./docs/)
-
-See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
+*Built with passion for improving healthcare supply chains.*
