@@ -1,107 +1,309 @@
-# PharmaLink - Pharmacy Management System
+# PharmaLink - Pharmacy-Wholesaler Platform
 
-A comprehensive pharmacy management system built with Node.js, PostgreSQL, and React.
+A comprehensive B2B platform connecting pharmacies with wholesalers for efficient medicine procurement and inventory management.
 
-## Features
+## Overview
 
-- **Inventory Management**: Track medications, stock levels, and expiry dates
-- **Prescription Management**: Process and manage customer prescriptions
-- **Billing & Invoicing**: Generate invoices and manage payments
-- **User Authentication**: Secure role-based access control
-- **Reporting**: Analytics and sales reports
-- **Customer Management**: Maintain customer records and purchase history
+PharmaLink is a scalable web-based platform that streamlines the pharmaceutical supply chain by enabling pharmacies to directly connect with wholesalers for medicine procurement, inventory management, and order processing.
 
-## Tech Stack
+## System Features
+
+### Core Functionality
+- **Multi-Role Authentication**: Admin, Pharmacy, and Wholesaler roles with granular permissions
+- **Medicine Management**: Complete CRUD operations with categories, expiry tracking, and batch management
+- **Inventory Management**: Real-time stock tracking, low-stock alerts, and automated replenishment
+- **Order System**: Shopping cart, order placement, and comprehensive order management
+- **Payment Processing**: Secure transaction handling with verification and payment history
+- **Messaging System**: Real-time communication between pharmacies and wholesalers
+- **Notification System**: Automated alerts for orders, payments, and inventory updates
+- **Analytics & Reporting**: Business intelligence dashboards and custom reports
+
+## Technology Stack
 
 ### Backend
-- **Node.js** with Express.js
-- **PostgreSQL** database
-- **JWT** for authentication
-- **Prisma** ORM for database management
+- **Node.js** (Express.js) - RESTful API server
+- **PostgreSQL** - Primary database with Prisma ORM
+- **Redis** - Caching and session management
+- **JWT** - Authentication and authorization
+- **Socket.io** - Real-time messaging
+- **Bull Queue** - Background job processing
 
-### Frontend
-- **React** with TypeScript
-- **Tailwind CSS** for styling
-- **React Router** for navigation
-- **Axios** for API calls
-- **React Hook Form** for form management
+### Infrastructure
+- **Docker** - Containerization
+- **Nginx** - Reverse proxy and load balancing
+- **GitHub Actions** - CI/CD pipeline
 
-## Project Structure
+## Repository Structure
 
 ```
 Pharmalink/
-├── backend/          # Node.js API server
-├── frontend/         # React application
-├── database/         # Database schema and migrations
-├── docker-compose.yml # Docker configuration
-└── README.md        # This file
+|
+|-- backend/                    # Node.js API server
+|   |-- src/
+|   |   |-- controllers/        # Request handlers
+|   |   |   |-- auth/
+|   |   |   |-- users/
+|   |   |   |-- medicines/
+|   |   |   |-- inventory/
+|   |   |   |-- orders/
+|   |   |   |-- payments/
+|   |   |   |-- messages/
+|   |   |   `-- notifications/
+|   |   |-- services/           # Business logic
+|   |   |   |-- auth/
+|   |   |   |-- user/
+|   |   |   |-- medicine/
+|   |   |   |-- inventory/
+|   |   |   |-- order/
+|   |   |   |-- payment/
+|   |   |   |-- message/
+|   |   |   `-- notification/
+|   |   |-- models/             # Data models
+|   |   |   |-- User.js
+|   |   |   |-- Medicine.js
+|   |   |   |-- Inventory.js
+|   |   |   |-- Order.js
+|   |   |   |-- Payment.js
+|   |   |   |-- Message.js
+|   |   |   `-- Notification.js
+|   |   |-- routes/             # API routes
+|   |   |   |-- auth/
+|   |   |   |-- users/
+|   |   |   |-- medicines/
+|   |   |   |-- inventory/
+|   |   |   |-- orders/
+|   |   |   |-- payments/
+|   |   |   |-- messages/
+|   |   |   `-- notifications/
+|   |   |-- middlewares/        # Custom middleware
+|   |   |   |-- auth.js
+|   |   |   |-- validation.js
+|   |   |   |-- rateLimit.js
+|   |   |   |-- errorHandler.js
+|   |   |   `-- logger.js
+|   |   |-- config/             # Configuration files
+|   |   |   |-- database.js
+|   |   |   |-- redis.js
+|   |   |   |-- email.js
+|   |   |   `-- swagger.js
+|   |   |-- utils/              # Utility functions
+|   |   |   |-- helpers.js
+|   |   |   |-- constants.js
+|   |   |   |-- validators.js
+|   |   |   `-- response.js
+|   |   |-- app.js              # Express app setup
+|   |   `-- server.js           # Server entry point
+|   |-- prisma/
+|   |   |-- schema.prisma       # Database schema
+|   |   |-- migrations/         # Database migrations
+|   |   `-- seed.js             # Database seeding
+|   |-- tests/                  # Test files
+|   |   |-- unit/
+|   |   |-- integration/
+|   |   `-- e2e/
+|   |-- package.json
+|   `-- .env.example
+|
+|-- docs/                       # Documentation
+|   |-- api/                    # API documentation
+|   |   |-- swagger.yaml
+|   |   `-- postman_collection.json
+|   |-- architecture/           # System architecture
+|   |   |-- system-design.md
+|   |   |-- database-schema.md
+|   |   `-- erd-diagram.png
+|   |-- deployment/             # Deployment guides
+|   |   |-- docker-setup.md
+|   |   |-- production-deploy.md
+|   |   `-- monitoring.md
+|   |-- development/            # Development guides
+|   |   |-- getting-started.md
+|   |   |-- coding-standards.md
+|   |   `-- testing-guide.md
+|   `-- srs.md                  # Software Requirements Specification
+|
+|-- config/                     # Configuration files
+|   |-- docker-compose.yml      # Development environment
+|   |-- docker-compose.prod.yml # Production environment
+|   |-- nginx.conf               # Nginx configuration
+|   `-- .env.example            # Environment variables template
+|
+|-- scripts/                    # Utility scripts
+|   |-- setup.sh               # Project setup
+|   |-- deploy.sh              # Deployment script
+|   |-- backup.sh              # Database backup
+|   `-- seed-data.sh           # Data seeding
+|
+|-- .github/                    # GitHub workflows
+|   |-- workflows/
+|   |   |-- ci.yml             # Continuous Integration
+|   |   |-- cd.yml             # Continuous Deployment
+|   |   `-- security.yml       # Security scanning
+|   |-- ISSUE_TEMPLATE/
+|   `-- PULL_REQUEST_TEMPLATE.md
+|
+|-- .gitignore
+|-- README.md
+`-- LICENSE
+
+## Branch Strategy
+
+- **main**: Production-ready code
+- **develop**: Integration branch for features
+- **feature/***: Feature-specific branches
+- **hotfix/***: Critical bug fixes
+- **release/***: Release preparation
+
+## Commit Message Convention
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### Types:
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `style`: Code formatting
+- `refactor`: Code refactoring
+- `test`: Test additions
+- `chore`: Maintenance tasks
+
+### Examples:
+```
+feat(auth): implement JWT authentication
+fix(inventory): resolve stock calculation bug
+docs(api): update payment endpoints documentation
+refactor(order): optimize order processing logic
+test(medicine): add unit tests for medicine service
 ```
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- PostgreSQL (v14 or higher)
-- npm or yarn
+- Node.js (v18+)
+- PostgreSQL (v14+)
+- Redis (v6+)
+- Docker & Docker Compose
+- Git
 
-### Installation
+### Quick Setup
 
-1. Clone the repository:
+1. **Clone the repository**
 ```bash
 git clone https://github.com/laviee143/Pharmalink.git
 cd Pharmalink
 ```
 
-2. Install dependencies:
+2. **Environment setup**
 ```bash
-# Backend
-cd backend
-npm install
-
-# Frontend
-cd ../frontend
-npm install
+cp config/.env.example .env
+# Edit .env with your configuration
 ```
 
-3. Set up environment variables:
+3. **Docker setup (Recommended)**
 ```bash
-# Backend (.env)
-DATABASE_URL="postgresql://username:password@localhost:5432/pharmalink"
-JWT_SECRET="your-secret-key"
-PORT=5000
-
-# Frontend (.env)
-REACT_APP_API_URL=http://localhost:5000
+docker-compose up -d
 ```
 
-4. Run database migrations:
+4. **Manual setup**
 ```bash
+# Backend setup
 cd backend
+npm install
 npx prisma migrate dev
+npx prisma generate
+npm run dev
 ```
 
-5. Start the development servers:
+5. **Seed database**
 ```bash
-# Backend (terminal 1)
 cd backend
-npm run dev
-
-# Frontend (terminal 2)
-cd frontend
-npm start
+npm run seed
 ```
 
 ## API Documentation
 
-The API documentation will be available at `http://localhost:5000/api-docs` when running the development server.
+- **Swagger UI**: `http://localhost:5000/api-docs`
+- **Postman Collection**: Available in `docs/api/`
+- **API Reference**: `docs/api/swagger.yaml`
+
+## Development Workflow
+
+1. Create feature branch from `develop`
+2. Implement changes following coding standards
+3. Add tests for new functionality
+4. Ensure all tests pass
+5. Submit pull request to `develop`
+6. Code review and merge
+7. Release to `main`
+
+## Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test suites
+npm run test:unit
+npm run test:integration
+npm run test:e2e
+
+# Test coverage
+npm run test:coverage
+```
+
+## Deployment
+
+### Development
+```bash
+docker-compose up -d
+```
+
+### Production
+```bash
+docker-compose -f config/docker-compose.prod.yml up -d
+```
+
+## Monitoring & Logging
+
+- **Application Logs**: Structured logging with Winston
+- **Database Monitoring**: Prisma query insights
+- **Performance Monitoring**: APM integration
+- **Health Checks**: `/health` endpoint
+
+## Security
+
+- **Authentication**: JWT with refresh tokens
+- **Authorization**: Role-based access control
+- **Input Validation**: Comprehensive request validation
+- **Rate Limiting**: API rate limiting
+- **Security Headers**: CORS, CSP, HSTS
+- **Encryption**: Data encryption at rest and in transit
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support and questions:
+- Create an issue in the repository
+- Email: support@pharmalink.com
+- Documentation: [docs/](./docs/)
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
